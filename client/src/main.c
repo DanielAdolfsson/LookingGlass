@@ -839,16 +839,18 @@ static void setServerMode(bool serverMode)
     return;
 
   state.serverMode = serverMode;
-  SDL_SetWindowGrab(state.window, state.serverMode);
-  DEBUG_INFO("Server Mode: %s", state.serverMode ? "on" : "off");
+  SDL_SetWindowGrab(state.window, serverMode);
+  DEBUG_INFO("Server Mode: %s", serverMode ? "on" : "off");
 
   app_alert(
     state.serverMode ? LG_ALERT_SUCCESS  : LG_ALERT_WARNING,
     state.serverMode ? "Capture Enabled" : "Capture Disabled"
   );
 
-  if (!state.serverMode)
+  if (!serverMode)
     alignMouseWithGuest();
+  else
+    state.warpState = WARP_STATE_ON;
 }
 
 int eventFilter(void * userdata, SDL_Event * event)
