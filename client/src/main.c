@@ -966,6 +966,24 @@ int eventFilter(void * userdata, SDL_Event * event)
       if (state.ignoreInput || !params.useSpiceInput)
         break;
 
+      if (
+        sc == SDL_SCANCODE_TAB &&
+        (state.keyDown[SDL_SCANCODE_LALT] || state.keyDown[SDL_SCANCODE_RALT]) &&
+        !state.keyDown[SDL_SCANCODE_LCTRL]
+      )
+      {
+        break;
+      }
+
+      if ((sc == SDL_SCANCODE_TAB && state.keyDown[SDL_SCANCODE_LALT]) || sc == SDL_SCANCODE_LGUI)
+      {
+        if (!state.keyDown[SDL_SCANCODE_LCTRL])
+          break;
+
+        spice_key_up(0x1d);
+        state.keyDown[SDL_SCANCODE_LCTRL] = false;
+      }
+
       uint32_t scancode = mapScancode(sc);
       if (scancode == 0)
         break;
