@@ -151,6 +151,7 @@ struct AppParams
   SDL_Scancode escapeKey;
   bool         showAlerts;
   bool         captureOnStart;
+  bool         captureOnFocus;
 
   unsigned int cursorPollInterval;
   unsigned int framePollInterval;

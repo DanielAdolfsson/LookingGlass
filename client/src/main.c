@@ -833,6 +833,24 @@ static void handleWindowEnter()
   state.warpState    = WARP_STATE_ARMED;
 }
 
+static void setServerMode(bool serverMode)
+{
+  if (!params.useSpiceInput)
+    return;
+
+  state.serverMode = serverMode;
+  SDL_SetWindowGrab(state.window, state.serverMode);
+  DEBUG_INFO("Server Mode: %s", state.serverMode ? "on" : "off");
+
+  app_alert(
+    state.serverMode ? LG_ALERT_SUCCESS  : LG_ALERT_WARNING,
+    state.serverMode ? "Capture Enabled" : "Capture Disabled"
+  );
+
+  if (!state.serverMode)
+    alignMouseWithGuest();
+}
+
 int eventFilter(void * userdata, SDL_Event * event)
 {
   switch(event->type)
@@ -859,6 +877,16 @@ int eventFilter(void * userdata, SDL_Event * event)
         case SDL_WINDOWEVENT_LEAVE:
           if (state.wminfo.subsystem != SDL_SYSWM_X11)
             handleWindowLeave();
+          break;
+
+        case SDL_WINDOWEVENT_FOCUS_GAINED:
+          if (params.captureOnFocus)
+            setServerMode(true);
+          break;
+
+        case SDL_WINDOWEVENT_FOCUS_LOST:
+          if (params.captureOnFocus)
+            setServerMode(false);
           break;
 
         case SDL_WINDOWEVENT_SIZE_CHANGED:
@@ -961,24 +989,7 @@ int eventFilter(void * userdata, SDL_Event * event)
       if (state.escapeActive)
       {
         if (state.escapeAction == -1)
-        {
-          if (params.useSpiceInput)
-          {
-            state.serverMode = !state.serverMode;
-            SDL_SetWindowGrab(state.window, state.serverMode);
-            DEBUG_INFO("Server Mode: %s", state.serverMode ? "on" : "off");
-
-            app_alert(
-              state.serverMode ? LG_ALERT_SUCCESS  : LG_ALERT_WARNING,
-              state.serverMode ? "Capture Enabled" : "Capture Disabled"
-            );
-
-            if (state.serverMode)
-              state.warpState = WARP_STATE_ON;
-            else
-              alignMouseWithGuest();
-          }
-        }
+          setServerMode(!state.serverMode);
         else
         {
           KeybindHandle handle = state.bindings[sc];

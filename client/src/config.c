@@ -323,6 +323,13 @@ static struct Option options[] =
     .type           = OPTION_TYPE_BOOL,
     .value.x_bool   = false
   },
+  {
+    .module         = "spice",
+    .name           = "captureOnFocus",
+    .description    = "Capture input when window is focused",
+    .type           = OPTION_TYPE_BOOL,
+    .value.x_bool   = false,
+  },
   {0}
 };
 
@@ -429,6 +436,7 @@ bool config_load(int argc, char * argv[])
 
     params.scaleMouseInput = option_get_bool("spice", "scaleCursor");
     params.captureOnStart  = option_get_bool("spice", "captureOnStart");
+    params.captureOnFocus = option_get_bool("spice", "captureOnFocus");
   }
 
   return true;
